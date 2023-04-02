@@ -30,9 +30,9 @@
 
       <template>
 
-        <v-row justify="center" class="mt-6">
+        <v-row justify="center" class="mt-6 mb-6">
           <v-expansion-panels>
-            <v-expansion-panel v-for="(item, index) in addressList" :key="index" @click="checkAmount(item[0])">
+            <v-expansion-panel v-for="(item, index) in addressList" :key="index" @click="checkAmount(item[1])">
               <v-expansion-panel-header v-slot="{ open }">
                 <v-row no-gutters>
                   <v-col cols="4" class="text-capitalize">
@@ -44,7 +44,7 @@
                   </v-col>
                   <v-col cols="8" class="text--secondary">
                     <v-fade-transition leave-absolute>
-                      <span v-if="open">When do you want to travel?</span>
+                      <span v-if="open">{{ item[1] }}</span>
                       <v-row v-else no-gutters style="width: 100%">
                         <v-col cols="6" class="mt-4">
                           {{ item[1] }}
@@ -57,84 +57,87 @@
                   </v-col>
                 </v-row>
               </v-expansion-panel-header>
-              <v-expansion-panel-content>
-                <!-- <v-chip v-if="item[2] === 'mainnet'" class="ma-2" color="green" outlined>
-                  {{ item[2] }}
-                </v-chip>
-                <v-chip v-else class="ma-2" color="orange" outlined>
-                  {{ item[2] }}
-                </v-chip> -->
+              <v-expansion-panel-content> 
+
+                <v-progress-linear
+                  v-if="!dataLoaded"
+                  color="deep-purple accent-4"
+                  indeterminate
+                  rounded
+                  height="6"
+                ></v-progress-linear>
+ 
+                <v-simple-table v-if="amountToken.length > 0 && dataLoaded">
+                  <template v-slot:default>
+                    <thead>
+                      <tr>
+                        <th class="text-left">
+                          amount
+                        </th>
+                        <th class="text-left">
+                          denom
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr
+                        v-for="item in amountToken"
+                        :key="item.denom"
+                      >
+                        <td>{{ item.amount }}</td>
+                        <td>{{ item.denom }}</td>
+                      </tr>
+                    </tbody>
+                  </template>
+                </v-simple-table>                
+                <v-alert
+                  v-else
+                  text
+                  color="info"
+                >
+                  <h3 class="text-h5">
+                    No token found
+                  </h3> 
+                  <v-divider
+                    class="my-4 info"
+                    style="opacity: 0.22"
+                  ></v-divider>
+                  <v-row
+                    align="center"
+                    no-gutters
+                  >
+                    <v-col class="grow">
+                      If you want to load your wallet with tokens, please go to the original site of {{ item[0] }}                      
+                    </v-col>
+                    <v-spacer></v-spacer>
+                    <v-col class="shrink"> 
+                      {{ item[4] }} 
+                    </v-col>
+                  </v-row>
+                </v-alert>
               </v-expansion-panel-content>
             </v-expansion-panel>
           </v-expansion-panels>
         </v-row>
-
-        <!--   <v-simple-table  class="mt-6" dense>
-    <template v-slot:default>
-      <thead>
-        <tr>
-          <th class="text-left">
-            Chain name
-          </th>
-          <th class="text-left">
-            Your address
-          </th>
-          <th class="text-left">
-            Type
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="(item, index) in addressList"
-          :key="index"
-        >
-          <td>
-
-                  
-            
-            {{ item[0] }}</td>
-          <td>{{ item[1] }}</td>
-          <td>
-            <v-chip
-              v-if="item[2] === 'mainnet'"
-              class="ma-2"
-              color="green"
-              outlined
-            >
-              {{ item[2] }}
-            </v-chip>            
-            <v-chip
-              v-else
-              class="ma-2"
-              color="orange"
-              outlined
-            >
-              {{ item[2] }}
-            </v-chip>              
-          </td>
-        </tr>
-      </tbody>
-    </template>
-  </v-simple-table> -->
       </template>
-
     </v-col>
   </v-row>
 </template>
 
 <script>
+import axios from 'axios'
 let { bech32 } = require('bech32')
-import { assets, chains, ibc } from 'chain-registry'
-
+import { assets, chains } from 'chain-registry'
 
 export default {
   data() {
     return {
       form: false,
-      address: 'cosmos13jawsn574rf3f0u5rhu7e8n6sayx5gkwjvqrkr',
+      address: '',
       loading: false,
       addressList: [],
+      amountToken: [],
+      dataLoaded: false
     }
   },
 
@@ -144,14 +147,18 @@ export default {
 
       for (const key in chains) {
         const assetList = assets.find(({ chain_name }) => chain_name === chains[key].chain_name)
+        const chainsList = chains.find(({ chain_name }) => chain_name === chains[key].chain_name)
 
-        if (chains[key].network_type !== 'testnet' && chains[key].status === 'live') {
-          this.addressList.push([
-            chains[key].chain_name,
-            bech32.encode(chains[key].bech32_prefix, decode.words),
-            chains[key].network_type,
-            assetList?.assets[0].logo_URIs?.png
-          ])
+        if (typeof assetList?.assets[0].logo_URIs?.png !== 'undefined') {
+          if (chains[key].network_type !== 'testnet' && chains[key].status === 'live') {
+            this.addressList.push([
+              chains[key].chain_name,
+              bech32.encode(chains[key].bech32_prefix, decode.words),
+              chains[key].network_type,
+              assetList?.assets[0].logo_URIs?.png,
+              chainsList?.website
+            ])
+          }
         }
       }
     },
@@ -167,12 +174,16 @@ export default {
       return !!v || 'Field is required'
     },
     isBech32(v) {
-      return !!this.testIsBech32(v) || 'Is not bech32'
+      return !!this.testIsBech32(v) || 'This address is not bech32'
     },
-    checkAmount(chain) {
-      const assetList = chains.find(({ chain_name }) => chain_name === chain)
+    async checkAmount(address) {
+      this.dataLoaded = false
+      this.amountToken = []
 
-      console.log(assetList)
+      let tokenBalance = await axios.get('/cosmos-api/get-balances?address=' + address)
+      this.amountToken = tokenBalance.data.balances
+      this.dataLoaded = true
+      console.log(tokenBalance.data)
     }
   },
 }
