@@ -180,7 +180,7 @@ export default {
       this.dataLoaded = false
       this.amountToken = []
 
-      let tokenBalance = await axios.get('/cosmos-address-convertor/cosmos-api/get-balances?address=' + address)
+      let tokenBalance = await axios.get('/cosmos-api/get-balances?address=' + address)
       this.amountToken = tokenBalance.data.balances
       this.dataLoaded = true
       console.log(tokenBalance.data)
