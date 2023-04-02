@@ -1,28 +1,11 @@
 <template>
   <v-app>
-<!--  
-    <v-app-bar
-      :clipped-left="clipped"
-      fixed
-      app
-    >
- 
- 
-      <v-toolbar-title>Cosmos address convertor</v-toolbar-title>
-      <v-spacer />
- 
-    </v-app-bar> -->
     <v-main>
       <v-container>
         <Nuxt />
       </v-container>
     </v-main>
-    <v-navigation-drawer
-      v-model="rightDrawer"
-      :right="right"
-      temporary
-      fixed
-    >
+    <v-navigation-drawer v-model="rightDrawer" :right="right" temporary fixed>
       <v-list>
         <v-list-item @click.native="right = !right">
           <v-list-item-action>
@@ -34,11 +17,21 @@
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-footer
-      :absolute="!fixed"
-      app
-    >
+    <v-footer :absolute="!fixed" app>
       <span>CosmosNova - {{ new Date().getFullYear() }}</span>
+      <v-spacer />
+      <a style="text-decoration: none; color: inherit;" href="https://github.com/CosmosNova/cosmos-address-convertor"
+        target="_blank">
+        <v-icon class="mr-3" large>
+          mdi-github
+        </v-icon>
+      </a>
+      <a style="text-decoration: none; color: inherit;" href="https://twitter.com/atmon3r" target="_blank">
+        <v-icon class="mr-3" large>
+          mdi-twitter
+        </v-icon>
+      </a>
+
     </v-footer>
   </v-app>
 </template>
@@ -46,23 +39,11 @@
 <script>
 export default {
   name: 'DefaultLayout',
-  data () {
+  data() {
     return {
       clipped: false,
       drawer: false,
       fixed: false,
-      items: [
-        {
-          icon: 'mdi-apps',
-          title: 'Welcome',
-          to: '/'
-        },
-        {
-          icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire'
-        }
-      ],
       miniVariant: false,
       right: true,
       rightDrawer: false,
