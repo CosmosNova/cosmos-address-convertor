@@ -43,7 +43,7 @@ export default {
   modules: [
   ],
   serverMiddleware: {
-    '/cosmos-api': '~/api'
+    '/cosmos-address-convertor/cosmos-api': '~/api'
   },
   // Vuetify module configuration: https://go.nuxtjs.dev/config-vuetify
   vuetify: {
