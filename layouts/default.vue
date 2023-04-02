@@ -20,12 +20,6 @@
     <v-footer :absolute="!fixed" app>
       <span>CosmosNova - {{ new Date().getFullYear() }}</span>
       <v-spacer />
-      <a style="text-decoration: none; color: inherit;" href="https://github.com/CosmosNova/cosmos-address-convertor"
-        target="_blank">
-        <v-icon class="mr-3" large>
-          mdi-github
-        </v-icon>
-      </a>
       <a style="text-decoration: none; color: inherit;" href="https://twitter.com/atmon3r" target="_blank">
         <v-icon class="mr-3" large>
           mdi-twitter
