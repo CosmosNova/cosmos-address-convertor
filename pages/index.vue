@@ -57,7 +57,7 @@
                   </v-col>
                 </v-row>
               </v-expansion-panel-header>
-              <v-expansion-panel-content> 
+              <v-expansion-panel-content>
 
                 <v-progress-linear
                   v-if="!dataLoaded"
@@ -66,7 +66,7 @@
                   rounded
                   height="6"
                 ></v-progress-linear>
- 
+
                 <v-simple-table v-if="amountToken.length > 0 && dataLoaded">
                   <template v-slot:default>
                     <thead>
@@ -89,7 +89,7 @@
                       </tr>
                     </tbody>
                   </template>
-                </v-simple-table>                
+                </v-simple-table>
                 <v-alert
                   v-else
                   text
@@ -97,7 +97,7 @@
                 >
                   <h3 class="text-h5">
                     No token found
-                  </h3> 
+                  </h3>
                   <v-divider
                     class="my-4 info"
                     style="opacity: 0.22"
@@ -107,11 +107,11 @@
                     no-gutters
                   >
                     <v-col class="grow">
-                      If you want to load your wallet with tokens, please go to the original site of {{ item[0] }}                      
+                      If you want to load your wallet with tokens, please go to the original site of {{ item[0] }}
                     </v-col>
                     <v-spacer></v-spacer>
-                    <v-col class="shrink"> 
-                      {{ item[4] }} 
+                    <v-col class="shrink">
+                      {{ item[4] }}
                     </v-col>
                   </v-row>
                 </v-alert>
@@ -150,7 +150,7 @@ export default {
         const chainsList = chains.find(({ chain_name }) => chain_name === chains[key].chain_name)
 
         if (typeof assetList?.assets[0].logo_URIs?.png !== 'undefined') {
-          if (chains[key].network_type !== 'testnet' && chains[key].status === 'live') {
+          if (chains[key].network_type !== 'testnet' && chains[key].status === 'live' && chains[key].chain_name !== 'evmos') {
             this.addressList.push([
               chains[key].chain_name,
               bech32.encode(chains[key].bech32_prefix, decode.words),
